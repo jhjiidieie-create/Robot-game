@@ -1,13 +1,13 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class ManualGameManager : MonoBehaviour
 {
     public float timeLimit = 30f;
     public TMP_Text timerText;
-    public GameObject resultPanel;
     public TMP_Text resultText;
+    public GameObject resultPanel;
 
     int totalPucks;
     int sortedPucks;
@@ -17,9 +17,8 @@ public class ManualGameManager : MonoBehaviour
     void Start()
     {
         totalPucks = FindObjectsOfType<ManualPuck>().Length;
-        timeLeft = timeLimit;
         resultPanel.SetActive(false);
-        UpdateTimer();
+        ShowTime(timeLimit);
     }
 
     void Update()
@@ -27,10 +26,9 @@ public class ManualGameManager : MonoBehaviour
         if (!gameActive) return;
 
         timeLeft -= Time.deltaTime;
-        UpdateTimer();
+        ShowTime(timeLeft);
 
-        if (timeLeft <= 0)
-            EndGame(false);
+        if (timeLeft <= 0) EndGame();
     }
 
     public void StartGame()
@@ -39,7 +37,7 @@ public class ManualGameManager : MonoBehaviour
 
         timeLeft = timeLimit;
         gameActive = true;
-        UpdateTimer();
+        ShowTime(timeLeft);
     }
 
     public bool AddPuck()
@@ -49,28 +47,24 @@ public class ManualGameManager : MonoBehaviour
         sortedPucks++;
 
         if (sortedPucks >= totalPucks)
-            EndGame(true);
+            EndGame();
 
         return true;
     }
 
-    void UpdateTimer()
-    {
-        int seconds = Mathf.CeilToInt(Mathf.Max(0, timeLeft));
-
-        if (timerText != null)
-            timerText.text = $"{seconds / 60}:{seconds % 60:00}";
-    }
-
-    void EndGame(bool won)
+    void EndGame()
     {
         if (!gameActive) return;
 
         gameActive = false;
+        resultText.text = $"{sortedPucks} из {totalPucks}";
         resultPanel.SetActive(true);
-        resultText.text = won
-            ? $"Победа! {sortedPucks} из {totalPucks}"
-            : $"Время вышло! {sortedPucks} из {totalPucks}";
+    }
+
+    void ShowTime(float time)
+    {
+        int seconds = Mathf.Max(0, Mathf.CeilToInt(time));
+        timerText.text = $"{seconds / 60}:{seconds % 60:00}";
     }
 
     public void Restart()
