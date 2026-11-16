@@ -16,7 +16,7 @@ public class RobotController : MonoBehaviour
         if (agent == null) return;
 
         agent.enabled = true;
-        gameManager.StartGame();
+        if (gameManager != null) gameManager.StartGame();
         FindNextPuck();
     }
 
@@ -24,6 +24,10 @@ public class RobotController : MonoBehaviour
     {
         if (agent != null && agent.enabled)
             agent.isStopped = true;
+
+        targetPuck = null;
+        targetHole = null;
+        hasPuck = false;
     }
 
     void Update()
@@ -133,7 +137,7 @@ public class RobotController : MonoBehaviour
         targetPuck = null;
         targetHole = null;
 
-        gameManager.CheckWin();
-        if (gameManager != null) FindNextPuck();
+        if (gameManager != null && gameManager.CheckWin()) return;
+        FindNextPuck();
     }
 }
