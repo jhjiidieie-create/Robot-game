@@ -48,6 +48,18 @@ public class RobotController : MonoBehaviour
         {
             if (puck.isSorted) continue;
 
+            bool hasHole = false;
+            foreach (Hole hole in FindObjectsOfType<Hole>())
+            {
+                if (!hole.isFilled && hole.number == puck.number && hole.dropPoint != null)
+                {
+                    hasHole = true;
+                    break;
+                }
+            }
+
+            if (!hasHole) continue;
+
             float distance = (puck.transform.position - transform.position).sqrMagnitude;
             if (distance < minDistance)
             {
@@ -90,7 +102,7 @@ public class RobotController : MonoBehaviour
 
         foreach (Hole hole in FindObjectsOfType<Hole>())
         {
-            if (hole.isFilled || hole.dropPoint == null) continue;
+            if (hole.isFilled || hole.dropPoint == null || hole.number != targetPuck.number) continue;
 
             Transform point = hole.approachPoint != null ? hole.approachPoint : hole.dropPoint;
             float distance = (point.position - transform.position).sqrMagnitude;
