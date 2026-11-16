@@ -3,18 +3,16 @@ using UnityEngine;
 public class ManualSlot : MonoBehaviour
 {
     public int slotNumber;
-    public bool slotFilled;
     public ManualGameManager gameManager;
 
     void OnTriggerEnter(Collider other)
     {
         ManualPuck puck = other.GetComponentInParent<ManualPuck>();
 
-        if (puck == null || puck.alreadySorted || slotFilled) return;
-        if (puck.puckNumber != slotNumber || gameManager == null) return;
+        if (!gameManager.gameActive || puck == null || puck.alreadySorted) return;
+        if (puck.puckNumber != slotNumber) return;
 
         puck.alreadySorted = true;
-        slotFilled = true;
         gameManager.CheckWin();
     }
 }
