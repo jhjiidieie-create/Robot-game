@@ -4,13 +4,10 @@ using UnityEngine.SceneManagement;
 
 public class ManualGameManager : MonoBehaviour
 {
-    public float timeLimit = 60f;
+    public float timeLimit = 30f;
     public TMP_Text timerText;
-    public TMP_Text statisticsText;
-    public GameObject victoryPanel;
-    public TMP_Text victoryText;
-    public GameObject defeatPanel;
-    public TMP_Text defeatText;
+    public GameObject resultPanel;
+    public TMP_Text resultText;
 
     int totalPucks;
     int sortedPucks;
@@ -21,11 +18,8 @@ public class ManualGameManager : MonoBehaviour
     {
         totalPucks = FindObjectsOfType<ManualPuck>().Length;
         timeLeft = timeLimit;
-
-        if (victoryPanel != null) victoryPanel.SetActive(false);
-        if (defeatPanel != null) defeatPanel.SetActive(false);
-
-        UpdateUI();
+        resultPanel.SetActive(false);
+        UpdateTimer();
     }
 
     void Update()
@@ -33,27 +27,26 @@ public class ManualGameManager : MonoBehaviour
         if (!gameActive) return;
 
         timeLeft -= Time.deltaTime;
-        UpdateUI();
+        UpdateTimer();
 
         if (timeLeft <= 0)
             EndGame(false);
     }
 
-    public void StartManualGame()
+    public void StartGame()
     {
         if (gameActive) return;
 
         timeLeft = timeLimit;
         gameActive = true;
-        UpdateUI();
+        UpdateTimer();
     }
 
-    public bool RegisterSortedPuck()
+    public bool AddPuck()
     {
         if (!gameActive) return false;
 
         sortedPucks++;
-        UpdateUI();
 
         if (sortedPucks >= totalPucks)
             EndGame(true);
@@ -61,15 +54,12 @@ public class ManualGameManager : MonoBehaviour
         return true;
     }
 
-    void UpdateUI()
+    void UpdateTimer()
     {
         int seconds = Mathf.CeilToInt(Mathf.Max(0, timeLeft));
 
         if (timerText != null)
             timerText.text = $"{seconds / 60}:{seconds % 60:00}";
-
-        if (statisticsText != null)
-            statisticsText.text = $"{sortedPucks} / {totalPucks}";
     }
 
     void EndGame(bool won)
@@ -77,20 +67,13 @@ public class ManualGameManager : MonoBehaviour
         if (!gameActive) return;
 
         gameActive = false;
-
-        if (won)
-        {
-            if (victoryPanel != null) victoryPanel.SetActive(true);
-            if (victoryText != null) victoryText.text = "Победа!";
-        }
-        else
-        {
-            if (defeatPanel != null) defeatPanel.SetActive(true);
-            if (defeatText != null) defeatText.text = "Время вышло!";
-        }
+        resultPanel.SetActive(true);
+        resultText.text = won
+            ? $"Победа! {sortedPucks} из {totalPucks}"
+            : $"Время вышло! {sortedPucks} из {totalPucks}";
     }
 
-    public void RestartManualGame()
+    public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
