@@ -5,7 +5,7 @@ public class RobotMountPoint : MonoBehaviour
 {
     public float attachDistance = 0.15f;
     public RobotPart installedPart;
-    public bool Isoccupied =>
+    public bool IsOccupied =>
     installedPart != null;
     RobotPart part;
 
