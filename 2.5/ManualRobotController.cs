@@ -31,8 +31,8 @@ public class ManualRobotController : MonoBehaviour
         bool left = SteamVR_Actions.default_Left.GetState(SteamVR_Input_Sources.LeftHand);
         bool right = SteamVR_Actions.default_Right.GetState(SteamVR_Input_Sources.LeftHand);
 
-        transform.Translate(Vector3.forward * (forward - backward) * moveSpeed * Time.deltaTime);
-        transform.Rotate(Vector3.up, (right - left) * turnSpeed * Time.deltaTime);
+        transform.Translate(Vector3.forward * ((forward ? 1 : 0) - (backward ? 1 : 0)) * moveSpeed * Time.deltaTime);
+        transform.Rotate(Vector3.up, ((right ? 1 : 0) - (left ? 1 : 0)) * turnSpeed * Time.deltaTime);
         IsMoving = forward || backward || left || right;
 
         if (SteamVR_Actions.default_Magnet.GetStateDown(SteamVR_Input_Sources.LeftHand)) PickUpPuck();
