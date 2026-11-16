@@ -9,14 +9,11 @@ public class ManualGameManager : MonoBehaviour
     public TMP_Text resultText;
     public GameObject resultPanel;
 
-    int totalPucks;
-    int sortedPucks;
     float timeLeft;
     bool gameActive;
 
     void Start()
     {
-        totalPucks = FindObjectsOfType<ManualPuck>().Length;
         resultPanel.SetActive(false);
         ShowTime(timeLimit);
     }
@@ -40,24 +37,39 @@ public class ManualGameManager : MonoBehaviour
         ShowTime(timeLeft);
     }
 
-    public bool AddPuck()
+    public bool CheckWin()
     {
         if (!gameActive) return false;
 
-        sortedPucks++;
+        ManualPuck[] pucks = FindObjectsOfType<ManualPuck>();
+        int sorted = 0;
 
-        if (sortedPucks >= totalPucks)
-            EndGame();
+        foreach (ManualPuck puck in pucks)
+            if (puck.alreadySorted) sorted++;
 
+        if (pucks.Length == 0 || sorted < pucks.Length) return false;
+
+        EndGame(sorted, pucks.Length);
         return true;
     }
 
     void EndGame()
     {
+        ManualPuck[] pucks = FindObjectsOfType<ManualPuck>();
+        int sorted = 0;
+
+        foreach (ManualPuck puck in pucks)
+            if (puck.alreadySorted) sorted++;
+
+        EndGame(sorted, pucks.Length);
+    }
+
+    void EndGame(int sorted, int total)
+    {
         if (!gameActive) return;
 
         gameActive = false;
-        resultText.text = $"{sortedPucks} из {totalPucks}";
+        resultText.text = $"{sorted} из {total}";
         resultPanel.SetActive(true);
     }
 
