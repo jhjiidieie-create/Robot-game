@@ -1,86 +1,93 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 using UnityEngine.SceneManagement;
 
 public class ManualGameManager : MonoBehaviour
 {
-    public float roundDuration = 60f;
-    public Text timerLabel;
-    public Text progressLabel;
-    public GameObject finishPanel;
-    public Text finishLabel;
+    public float timeLimit = 60f;
+    public TMP_Text timerText;
+    public TMP_Text statisticsText;
+    public GameObject victoryPanel;
+    public TMP_Text victoryText;
+    public GameObject defeatPanel;
+    public TMP_Text defeatText;
 
-    int allPucks;
+    int totalPucks;
     int sortedPucks;
-    float remainingTime;
-    bool gameRunning;
+    float timeLeft;
+    bool gameActive;
 
     void Start()
     {
-        allPucks = FindObjectsOfType<ManualPuck>().Length;
-        remainingTime = roundDuration;
+        totalPucks = FindObjectsOfType<ManualPuck>().Length;
+        timeLeft = timeLimit;
 
-        if (finishPanel != null)
-            finishPanel.SetActive(false);
+        if (victoryPanel != null) victoryPanel.SetActive(false);
+        if (defeatPanel != null) defeatPanel.SetActive(false);
 
-        UpdateDisplay();
+        UpdateUI();
     }
 
     void Update()
     {
-        if (!gameRunning) return;
+        if (!gameActive) return;
 
-        remainingTime -= Time.deltaTime;
-        UpdateDisplay();
+        timeLeft -= Time.deltaTime;
+        UpdateUI();
 
-        if (remainingTime <= 0)
-            FinishManualGame(false);
+        if (timeLeft <= 0)
+            EndGame(false);
     }
 
     public void StartManualGame()
     {
-        if (gameRunning) return;
+        if (gameActive) return;
 
-        remainingTime = roundDuration;
-        gameRunning = true;
-        UpdateDisplay();
+        timeLeft = timeLimit;
+        gameActive = true;
+        UpdateUI();
     }
 
     public bool RegisterSortedPuck()
     {
-        if (!gameRunning) return false;
+        if (!gameActive) return false;
 
         sortedPucks++;
-        UpdateDisplay();
+        UpdateUI();
 
-        if (sortedPucks >= allPucks)
-            FinishManualGame(true);
+        if (sortedPucks >= totalPucks)
+            EndGame(true);
 
         return true;
     }
 
-    void UpdateDisplay()
+    void UpdateUI()
     {
-        int secondsLeft = Mathf.CeilToInt(Mathf.Max(0, remainingTime));
+        int seconds = Mathf.CeilToInt(Mathf.Max(0, timeLeft));
 
-        if (timerLabel != null)
-            timerLabel.text = $"{secondsLeft / 60}:{secondsLeft % 60:00}";
+        if (timerText != null)
+            timerText.text = $"{seconds / 60}:{seconds % 60:00}";
 
-        if (progressLabel != null)
-            progressLabel.text = $"{sortedPucks} / {allPucks}";
+        if (statisticsText != null)
+            statisticsText.text = $"{sortedPucks} / {totalPucks}";
     }
 
-    void FinishManualGame(bool won)
+    void EndGame(bool won)
     {
-        if (!gameRunning) return;
+        if (!gameActive) return;
 
-        gameRunning = false;
+        gameActive = false;
 
-        if (finishPanel != null)
-            finishPanel.SetActive(true);
-
-        if (finishLabel != null)
-            finishLabel.text = won ? "Победа!" : "Время вышло!";
+        if (won)
+        {
+            if (victoryPanel != null) victoryPanel.SetActive(true);
+            if (victoryText != null) victoryText.text = "Победа!";
+        }
+        else
+        {
+            if (defeatPanel != null) defeatPanel.SetActive(true);
+            if (defeatText != null) defeatText.text = "Время вышло!";
+        }
     }
 
     public void RestartManualGame()
