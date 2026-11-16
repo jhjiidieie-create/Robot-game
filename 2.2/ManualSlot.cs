@@ -12,7 +12,7 @@ public class ManualSlot : MonoBehaviour
 
         if (foundPuck == null || foundPuck.alreadySorted || slotOccupied) return;
         if (foundPuck.puckNumber != slotNumber || manualManager == null) return;
-        if (!manualManager.RegisterSortedPuck()) return;
+        if (!manualManager.AddPuck()) return;
 
         foundPuck.alreadySorted = true;
         slotOccupied = true;
