@@ -14,7 +14,8 @@ public class RobotController : MonoBehaviour
         {
             if (puck.isSorted) continue;
 
-            float distance = (puck.transform.position - transform.position).sqrMagnitude;
+            Transform point = puck.pickupPoint != null ? puck.pickupPoint : puck.transform;
+            float distance = (point.position - transform.position).sqrMagnitude;
 
             if (distance < minDistance)
             {
@@ -25,7 +26,9 @@ public class RobotController : MonoBehaviour
 
         if (nearest == null) return;
 
+        Transform target = nearest.pickupPoint != null ? nearest.pickupPoint : nearest.transform;
+
         agent.enabled = true;
-        agent.SetDestination(nearest.transform.position);
+        agent.SetDestination(target.position);
     }
 }
