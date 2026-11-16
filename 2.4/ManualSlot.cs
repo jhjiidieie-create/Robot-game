@@ -9,10 +9,10 @@ public class ManualSlot : MonoBehaviour
     {
         ManualPuck puck = other.GetComponentInParent<ManualPuck>();
 
-        if (!gameManager.gameActive || puck == null || puck.alreadySorted) return;
+        if (puck == null || puck.alreadySorted) return;
         if (puck.puckNumber != slotNumber) return;
 
         puck.alreadySorted = true;
-        gameManager.CheckWin();
+        gameManager.AddPuck();
     }
 }
