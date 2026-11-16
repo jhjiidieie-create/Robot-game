@@ -6,9 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public float timeLimit = 30f;
     public TMP_Text timerText;
-    public TMP_Text loseResultText;
-    public GameObject victoryUI;
-    public GameObject loseUI;
+    public TMP_Text resultText;
+    public GameObject resultPanel;
     public RobotController robot;
 
     float timeLeft;
@@ -16,8 +15,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        victoryUI.SetActive(false);
-        loseUI.SetActive(false);
+        resultPanel.SetActive(false);
         timerText.text = "0:30";
     }
 
@@ -30,7 +28,7 @@ public class GameManager : MonoBehaviour
         timerText.text = $"{seconds / 60}:{seconds % 60:00}";
 
         if (timeLeft <= 0)
-            EndGame(false);
+            EndGame();
     }
 
     public void StartGame()
@@ -50,30 +48,27 @@ public class GameManager : MonoBehaviour
         foreach (Puck puck in pucks)
             if (puck.isSorted) sorted++;
 
-        if (pucks.Length == 0 || sorted != pucks.Length) return false;
+        if (pucks.Length == 0 || sorted < pucks.Length) return false;
 
-        EndGame(true);
+        EndGame();
         return true;
     }
 
-    void EndGame(bool win)
+    void EndGame()
     {
+        if (!gameActive) return;
+
         gameActive = false;
         robot.StopRobot();
 
-        if (win)
-            victoryUI.SetActive(true);
-        else
-        {
-            Puck[] pucks = FindObjectsOfType<Puck>();
-            int sorted = 0;
+        Puck[] pucks = FindObjectsOfType<Puck>();
+        int sorted = 0;
 
-            foreach (Puck puck in pucks)
-                if (puck.isSorted) sorted++;
+        foreach (Puck puck in pucks)
+            if (puck.isSorted) sorted++;
 
-            loseResultText.text = $"{sorted} из {pucks.Length}";
-            loseUI.SetActive(true);
-        }
+        resultText.text = $"{sorted} из {pucks.Length}";
+        resultPanel.SetActive(true);
     }
 
     public void Restart()
