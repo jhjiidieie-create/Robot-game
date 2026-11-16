@@ -92,7 +92,9 @@ public class RobotController : MonoBehaviour
         {
             if (hole.isFilled || hole.dropPoint == null) continue;
 
-            float distance = (hole.dropPoint.position - transform.position).sqrMagnitude;
+            Transform point = hole.approachPoint != null ? hole.approachPoint : hole.dropPoint;
+            float distance = (point.position - transform.position).sqrMagnitude;
+
             if (distance < minDistance)
             {
                 minDistance = distance;
@@ -103,7 +105,8 @@ public class RobotController : MonoBehaviour
         if (targetHole == null) return;
 
         agent.isStopped = false;
-        agent.SetDestination(targetHole.dropPoint.position);
+        Transform destination = targetHole.approachPoint != null ? targetHole.approachPoint : targetHole.dropPoint;
+        agent.SetDestination(destination.position);
     }
 
     void DropPuck()
