@@ -26,7 +26,8 @@ public class GameManager : MonoBehaviour
         if (!gameActive) return;
 
         timeLeft -= Time.deltaTime;
-        timerText.text = $"{Mathf.FloorToInt(timeLeft / 60)}:{Mathf.CeilToInt(timeLeft % 60):00}";
+        int seconds = Mathf.Max(0, Mathf.CeilToInt(timeLeft));
+        timerText.text = $"{seconds / 60}:{seconds % 60:00}";
 
         if (timeLeft <= 0)
             EndGame(false);
@@ -39,9 +40,9 @@ public class GameManager : MonoBehaviour
         timerText.text = "0:30";
     }
 
-    public void CheckWin()
+    public bool CheckWin()
     {
-        if (!gameActive) return;
+        if (!gameActive) return false;
 
         Puck[] pucks = FindObjectsOfType<Puck>();
         int sorted = 0;
@@ -49,8 +50,10 @@ public class GameManager : MonoBehaviour
         foreach (Puck puck in pucks)
             if (puck.isSorted) sorted++;
 
-        if (pucks.Length > 0 && sorted == pucks.Length)
-            EndGame(true);
+        if (pucks.Length == 0 || sorted != pucks.Length) return false;
+
+        EndGame(true);
+        return true;
     }
 
     void EndGame(bool win)
