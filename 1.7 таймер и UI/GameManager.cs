@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         resultPanel.SetActive(false);
-        timerText.text = "0:30";
+        ShowTime(timeLimit);
     }
 
     void Update()
@@ -24,18 +24,18 @@ public class GameManager : MonoBehaviour
         if (!gameActive) return;
 
         timeLeft -= Time.deltaTime;
-        int seconds = Mathf.Max(0, Mathf.CeilToInt(timeLeft));
-        timerText.text = $"{seconds / 60}:{seconds % 60:00}";
+        ShowTime(timeLeft);
 
-        if (timeLeft <= 0)
-            EndGame();
+        if (timeLeft <= 0) EndGame();
     }
 
     public void StartGame()
     {
+        if (gameActive) return;
+
         timeLeft = timeLimit;
         gameActive = true;
-        timerText.text = "0:30";
+        ShowTime(timeLeft);
     }
 
     public bool CheckWin()
@@ -50,25 +50,36 @@ public class GameManager : MonoBehaviour
 
         if (pucks.Length == 0 || sorted < pucks.Length) return false;
 
-        EndGame();
+        EndGame(sorted, pucks.Length);
         return true;
     }
 
     void EndGame()
     {
-        if (!gameActive) return;
-
-        gameActive = false;
-        robot.StopRobot();
-
         Puck[] pucks = FindObjectsOfType<Puck>();
         int sorted = 0;
 
         foreach (Puck puck in pucks)
             if (puck.isSorted) sorted++;
 
-        resultText.text = $"{sorted} из {pucks.Length}";
+        EndGame(sorted, pucks.Length);
+    }
+
+    void EndGame(int sorted, int total)
+    {
+        if (!gameActive) return;
+
+        gameActive = false;
+        if (robot != null) robot.StopRobot();
+
+        resultText.text = $"{sorted} из {total}";
         resultPanel.SetActive(true);
+    }
+
+    void ShowTime(float time)
+    {
+        int seconds = Mathf.Max(0, Mathf.CeilToInt(time));
+        timerText.text = $"{seconds / 60}:{seconds % 60:00}";
     }
 
     public void Restart()
