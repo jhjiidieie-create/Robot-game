@@ -1,73 +1,35 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class ManualGameManager : MonoBehaviour
 {
-    public float timeLimit = 30f;
-    public TMP_Text timerText;
+    public int totalPucks;
+    public TMP_Text countText;
     public TMP_Text resultText;
     public GameObject resultPanel;
-    public ManualRobotController robot;
 
-    public bool gameActive;
-    float timeLeft;
+    int sortedPucks;
 
     void Start()
     {
         resultPanel.SetActive(false);
-        ShowTime(timeLimit);
+        UpdateUI();
     }
 
-    void Update()
+    public void AddPuck()
     {
-        if (!gameActive) return;
+        sortedPucks++;
+        UpdateUI();
 
-        timeLeft -= Time.deltaTime;
-        ShowTime(timeLeft);
-
-        if (timeLeft <= 0) EndGame();
+        if (sortedPucks == totalPucks)
+        {
+            resultText.text = "Победа!";
+            resultPanel.SetActive(true);
+        }
     }
 
-    public void StartGame()
+    void UpdateUI()
     {
-        timeLeft = timeLimit;
-        gameActive = true;
-    }
-
-    public void CheckWin()
-    {
-        ManualPuck[] pucks = FindObjectsOfType<ManualPuck>();
-
-        foreach (ManualPuck puck in pucks)
-            if (!puck.alreadySorted) return;
-
-        EndGame();
-    }
-
-    void EndGame()
-    {
-        gameActive = false;
-        if (robot != null) robot.StopRobot();
-
-        ManualPuck[] pucks = FindObjectsOfType<ManualPuck>();
-        int sorted = 0;
-
-        foreach (ManualPuck puck in pucks)
-            if (puck.alreadySorted) sorted++;
-
-        resultText.text = sorted + " из " + pucks.Length;
-        resultPanel.SetActive(true);
-    }
-
-    void ShowTime(float time)
-    {
-        int seconds = Mathf.Max(0, Mathf.CeilToInt(time));
-        timerText.text = $"{seconds / 60}:{seconds % 60:00}";
-    }
-
-    public void Restart()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        countText.text = sortedPucks + " / " + totalPucks;
     }
 }
