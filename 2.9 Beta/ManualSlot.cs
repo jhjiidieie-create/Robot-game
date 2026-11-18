@@ -3,7 +3,7 @@ using UnityEngine;
 public class ManualSlot : MonoBehaviour
 {
     public int slotNumber;
-    public ManualGameManager gameManager;
+    public GameManager gameManager;
 
     void OnTriggerEnter(Collider other)
     {
