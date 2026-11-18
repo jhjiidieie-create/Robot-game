@@ -5,7 +5,7 @@ public class ManualRobotAssembly : MonoBehaviour
     public RobotMountPoint headMount;
     public ManualRobotController robotController;
     public StartZone startZone;
-    public ManualGameManager gameManager;
+    public GameManager gameManager;
 
     public void StartRobot()
     {
