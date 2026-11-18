@@ -6,5 +6,5 @@ public class StartZone : MonoBehaviour
     int objectsInside;
 
     void OnTriggerEnter(Collider other) => isOccupied = ++objectsInside > 0;
-    void OnTriggerExit(Collider other) => isOccupied = --objectsInside > 0;
+    void OnTriggerExit(Collider other) => isOccupied = (objectsInside = Mathf.Max(0, objectsInside - 1)) > 0;
 }
