@@ -38,14 +38,14 @@ public class ManualRobotController : MonoBehaviour
     void PickUpPuck()
     {
         if (carriedPuck != null) return;
+        float min = grabDistance * grabDistance;
 
-        float min = grabDistance;
         foreach (Puck puck in pucks)
         {
             if (puck == null || puck.isSorted || puck.isCarried) continue;
             float d = (carryPoint.position - puck.transform.position).sqrMagnitude;
-            if (d >= min * min) continue;
-            min = Mathf.Sqrt(d);
+            if (d >= min) continue;
+            min = d;
             carriedPuck = puck;
         }
 
