@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text timerText, resultText;
     public GameObject resultPanel;
     public RobotController robot;
+    public ManualRobotController manualRobot;
 
     int totalPucks, sortedPucks;
     float timeLeft;
@@ -47,6 +48,7 @@ public class GameManager : MonoBehaviour
     {
         active = false;
         if (robot != null) robot.StopRobot();
+        if (manualRobot != null) manualRobot.StopRobot();
         resultText.text = $"{sortedPucks} из {totalPucks}";
         resultPanel.SetActive(true);
     }
