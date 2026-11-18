@@ -4,13 +4,16 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    public bool manualMode;
+    public int totalPucks;
     public float timeLimit = 30f;
     public TMP_Text timerText, resultText;
     public GameObject resultPanel;
     public RobotController robot;
 
+    int sortedPucks;
     float timeLeft;
-    bool gameActive;
+    bool active, finished;
 
     void Start()
     {
@@ -20,28 +23,32 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (!gameActive) return;
+        if (!active) return;
         ShowTime(timeLeft -= Time.deltaTime);
         if (timeLeft <= 0) EndGame();
     }
 
     public void StartGame()
     {
-        if (gameActive) return;
+        if (active || finished) return;
         timeLeft = timeLimit;
-        gameActive = true;
+        active = true;
         ShowTime(timeLeft);
+    }
+
+    public void AddPuck()
+    {
+        if (finished) return;
+        if (++sortedPucks >= totalPucks) EndGame();
     }
 
     public bool CheckWin()
     {
-        if (!gameActive) return false;
-
+        if (!active || manualMode) return false;
         Puck[] pucks = FindObjectsOfType<Puck>();
         int sorted = 0;
         foreach (Puck puck in pucks)
             if (puck.isSorted) sorted++;
-
         if (pucks.Length == 0 || sorted < pucks.Length) return false;
         EndGame(sorted, pucks.Length);
         return true;
@@ -49,17 +56,22 @@ public class GameManager : MonoBehaviour
 
     void EndGame()
     {
-        Puck[] pucks = FindObjectsOfType<Puck>();
-        int sorted = 0;
-        foreach (Puck puck in pucks)
-            if (puck.isSorted) sorted++;
-        EndGame(sorted, pucks.Length);
+        if (manualMode) EndGame(sortedPucks, totalPucks);
+        else
+        {
+            Puck[] pucks = FindObjectsOfType<Puck>();
+            int sorted = 0;
+            foreach (Puck puck in pucks)
+                if (puck.isSorted) sorted++;
+            EndGame(sorted, pucks.Length);
+        }
     }
 
     void EndGame(int sorted, int total)
     {
-        if (!gameActive) return;
-        gameActive = false;
+        if (finished) return;
+        finished = true;
+        active = false;
         if (robot != null) robot.StopRobot();
         resultText.text = $"{sorted} из {total}";
         resultPanel.SetActive(true);
