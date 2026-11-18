@@ -15,7 +15,7 @@ public class RobotController : MonoBehaviour
     {
         if (agent == null) return;
         agent.enabled = true;
-        gameManager.StartGame();
+        if (gameManager != null) gameManager.StartGame();
         FindNextPuck();
     }
 
