@@ -24,15 +24,18 @@ public class RobotMountPoint : MonoBehaviour
             Interactable item = part.GetComponent<Interactable>();
             if (item == null || item.attachedToHand == null) continue;
 
+            // Получаем компоненты только устанавливаемой детали до её перемещения в робота.
+            Collider[] partColliders = part.GetComponentsInChildren<Collider>(true);
+            Throwable throwable = part.GetComponent<Throwable>();
+            Rigidbody rb = part.GetComponent<Rigidbody>();
+
             item.attachedToHand.DetachObject(part.gameObject, false);
             item.enabled = false;
-
-            Throwable throwable = part.GetComponent<Throwable>();
             if (throwable != null) throwable.enabled = false;
-
-            Rigidbody rb = part.GetComponent<Rigidbody>();
             if (rb != null) { rb.isKinematic = true; rb.useGravity = false; }
-            foreach (Collider col in part.GetComponentsInChildren<Collider>()) col.enabled = false;
+
+            foreach (Collider col in partColliders)
+                if (col != null) col.enabled = false;
 
             part.isAttached = true;
             installedPart = part;
