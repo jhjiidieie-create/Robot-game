@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class RobotAssembly : MonoBehaviour
 {
+    public RobotMountPoint motorMount, powerSupplyMount, manipulatorMount, tracksMount;
     public StartZone startZone;
     public RobotController automaticRobot;
     public ManualRobotController manualRobot;
@@ -9,10 +10,17 @@ public class RobotAssembly : MonoBehaviour
 
     public void StartRobot()
     {
-        if (!startZone.isOccupied) return;
+        if (motorMount == null || !motorMount.IsOccupied ||
+            powerSupplyMount == null || !powerSupplyMount.IsOccupied ||
+            manipulatorMount == null || !manipulatorMount.IsOccupied ||
+            tracksMount == null || !tracksMount.IsOccupied ||
+            startZone == null || !startZone.isOccupied) return;
+
         if (automaticRobot != null) automaticRobot.StartRobot();
-        if (manualRobot == null) return;
-        manualRobot.StartRobot();
-        gameManager.StartGame();
+        if (manualRobot != null)
+        {
+            manualRobot.StartRobot();
+            if (gameManager != null) gameManager.StartGame();
+        }
     }
 }
